@@ -1,0 +1,4 @@
+requests
+alive_progress
+pandas
+psycopg2_binary
