@@ -24,7 +24,7 @@ architecture des composants
 - [Storage](docs/architecture/storage.md)
 - [Query and Processing](docs/architecture/storage.md)
 - [Analysis and Output](docs/architecture/analysis_and_output.md)
-- Platform Management
+- [Platform Management](docs/architecture/platform_management.md)
 
 ## Content
 For information on the types of content available in the application, see:
