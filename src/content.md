@@ -1,7 +1,7 @@
-I've written a README.md file based on your application's description:
-
-# Steam Stat
+# Data Games Viz
 An application to understand statistics of [Steam](https://store.steampowered.com)
+
+# Organisation
 
 The main page consists of one screen with several interactive elements.
 
