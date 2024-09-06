@@ -1,44 +1,34 @@
 # Steam Stat
 An application to understand statistique of [Steam](https://store.steampowered.com)
 
-The application using [dbt](https://www.getdbt.com), [Evidence](https://evidence.dev) and [PostgreSQL](postgresql.org/)
+The application using [Kestra](https://kestra.io), [dbt](https://www.getdbt.com), [Evidence](https://evidence.dev) and [PostgreSQL](postgresql.org/)
 ## Installation
-command git
-architecture des composants
-Using Docker Desktop ton installer this app.
+Download : Using git
+```sh
+42sh> git clone git@github.com:olexya/data-games-viz.git
+```
+Start : Using Docker
 ```sh
 42sh> docker-compose up -d
 ```
+
 ## Viewing
-Open in browser [localhost:3000](localhost:3000)
-AND enjoy !
-## ContentÍ
-This app contains one page, the main page.
+Once installed, you can view the application by opening your browser at [localhost:3000](localhost:3000). Enjoy exploring Steam statistics!
 
-The first element is filter Platforms and Years. He impact all element of the pages except the second line.
+## Achitecture
+architecture des composants
 
-The second line contains different general data value.
+## Study
+(image data infrastructure open sources)
+- [Ingestion and Transport](docs/architecture/ingestion_and_transport.md)
+- [Storage](docs/architecture/storage.md)
+- [Query and Processing](docs/architecture/storage.md)
+- [Analysis and Output](docs/architecture/analysis_and_output.md)
+- Platform Management
 
-The next element is a tab panel for three data :
-- Games
+## Content
+For information on the types of content available in the application, see:
+[Content](docs/content.md)
 
-Element 1 : Number games with filters
-
-Element 2 : Top 3 more rated games, the filters platforms and year impact this
-
-Element 3 : Number and average price of games by year, he is impact by filter platforms
-- Categories
-
-Element 1 : Number categories with filters
-
-Element 2 : Top 3 most games categories, the filters platforms and year impact this
-
-Element 3 : Number of categories created by year, he is impact by filter platforms
-- Platforms
-
-Element 1 : Number platforms
-
-Element 2 : This graph show link between categories Single-Player and Multi-player and all of platforms.
-The last element is an table to view more info for a specific games. The search table is impact by filter et and search. And on clic on an element a new tab open on the left of search table et show detail of the games.
 ## Credit
-The application using [dbt](https://www.getdbt.com), [Evidence](https://evidence.dev) and [PostgreSQL](postgresql.org/)
+Special thanks to [Kestra](https://kestra.io), [dbt](https://www.getdbt.com), [Evidence](https://evidence.dev) and [PostgreSQL](postgresql.org/) for their contributions to this project.
