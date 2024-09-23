@@ -1,0 +1,61 @@
+
+version: 2
+
+models:
+  - name: games
+    description: "games model"
+    columns:
+      - name: steam_id
+        description: "The primary key for this table, it id steam"
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: "Name of Game"
+      - name: release_date
+        description: "Year of release"
+      - name: recommendations
+        description: "Number of recommendations"
+      - name: windows
+      - name: mac
+      - name: linux
+      - name: price
+        tests:
+          - not_null
+      - name: about
+
+  - name: categories
+    description: "List of categories"
+    columns:
+      - name: id_categorie
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: "Name of categorie"
+        tests:
+          - not_null
+      - name: create_date
+        description: "Year de création"
+        tests:
+          - not_null
+      - name: nb_games
+        description: "Nb de games in categories"
+        tests:
+          - not_null
+      - name: windows
+      - name: mac
+      - name: linux
+
+  - name: link_games_categories
+    description: "Link games ant categories"
+    columns:
+      - name: id_game
+        description: "ID of games"
+        tests:
+          - not_null
+      - name: id_categorie
+        description: "ID of categories"
+        tests:
+          - not_null

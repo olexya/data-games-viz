@@ -1,0 +1,19 @@
+
+version: 2
+
+models:
+  - name: obt_plateforms
+    description: "games model"
+    columns:
+      - name: game_name
+        tests:
+          - not_null
+      - name: categorie_name
+        tests:
+          - not_null
+      - name: release_date
+        tests:
+          - not_null
+      - name: plateforms
+        tests:
+          - not_null

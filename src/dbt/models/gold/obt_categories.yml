@@ -1,0 +1,30 @@
+
+version: 2
+
+models:
+  - name: obt_categories
+    description: "categories model"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - not_null
+      - name: name_categorie
+        description: "Name of Categories"
+        tests:
+          - not_null
+      - name: release_date
+        description: "Date of creation"
+        type: date
+        tests:
+          - not_null
+      - name: nb_games
+        description: "Nb de games in categories"
+        tests:
+          - not_null
+      - name: value
+        tests:
+          - not_null
+      - name: plateforms
+        tests:
+          - not_null

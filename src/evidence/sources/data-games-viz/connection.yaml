@@ -1,0 +1,8 @@
+# This file was automatically generated
+name: data_games_viz
+type: postgres
+options:
+  host: postgres
+  port: 5432
+  database: postgres
+  schema: data_games_viz

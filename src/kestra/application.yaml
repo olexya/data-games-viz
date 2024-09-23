@@ -1,0 +1,24 @@
+datasources:
+  postgres:
+    url: jdbc:postgresql://postgres:5432/${KESTRA_POSTGRES_DB}
+    driverClassName: org.postgresql.Driver
+    username: ${KESTRA_POSTGRES_USER}
+    password: ${KESTRA_POSTGRES_PASSWORD}
+kestra:
+  plugins:
+    configurations:
+      - type: io.kestra.plugin.scripts.runner.docker.Docker
+        values:
+          volume-enabled: true
+  storage:
+    type: local
+    local:
+      base-path: "/app/storage"
+  tasks:
+    tmp-dir:
+      path: /tmp/kestra-wd/tmp
+  url: http://localhost:8080/
+  repository:
+    type: postgres
+  queue:
+    type: postgres

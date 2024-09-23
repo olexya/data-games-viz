@@ -1,0 +1,72 @@
+name: data-games-viz
+services:
+  postgres:
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    image: postgres:latest
+    env_file:
+      - ./.env
+    volumes:
+      - ./docker-data/pgdata:/var/lib/postgresql/data
+      - ./src/loader/postgres:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${KESTRA_POSTGRES_DB} -U $${KESTRA_POSTGRES_USER}"]
+      interval: 5s
+      timeout: 2s
+      retries: 30
+
+  kestra:
+    image: kestra/kestra:latest
+    container_name: kestra
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./docker-data/kestra/tmp:/tmp/
+      - ./docker-data/kestra/workspace:/app/storage
+      - ./src/kestra/application.yaml:/home/kestra/application.yaml
+      - ./.env:/home/kestra/.env
+    env_file:
+      - ./.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    user: root
+    ports:
+      - 8080:8080
+    command: server standalone --config /home/kestra/application.yaml
+
+  loader:
+    image: python
+    container_name: loader
+    depends_on:
+      - kestra
+    volumes:
+      - ./src/get-data:/home/src/get-data
+      - ./src/dbt:/home/src/dbt
+      - ./src/kestra:/home/src/kestra
+      - ./src/loader/kestra:/home/src/loader/kestra
+      - ./src/loader/postgres:/home/src/loader/postgres
+      - ./src/loader/main.py:/home/src/loader/main.py
+      - ./src/loader/requirements.txt:/home/src/loader/requirements.txt
+      - ./.env:/home/src/loader/.env
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - /bin/sh
+      - -c
+      - |
+        pip install -r /home/src/loader/requirements.txt
+        python-on-whales download-cli
+        python /home/src/loader/main.py
+
+  evidence:
+    container_name: evidence
+    image: evidencedev/devenv:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      loader:
+        condition: service_completed_successfully
+    volumes:
+      - ./src/evidence:/evidence-workspace
+    env_file:
+      - ./.env

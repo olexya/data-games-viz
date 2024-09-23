@@ -1,0 +1,29 @@
+
+version: 2
+
+models:
+  - name: obt_games
+    description: "games model"
+    columns:
+      - name: steam_id
+        description: "The primary key for this table, it id steam"
+        tests:
+          - unique
+          - not_null
+      - name: name_game
+        description: "Name of Game"
+        tests:
+          - not_null
+      - name: release_game
+        description: "Date of release"
+        type: date
+        tests:
+          - not_null
+      - name: notes
+        description: "Numbers of recommendations"
+      - name: plateforms
+        tests:
+          - not_null
+      - name: price
+        tests:
+          - not_null

@@ -1,0 +1,17 @@
+name: "{{ env_var('DBT_NAME') }}"
+version: '1.0.0'
+config-version: 2
+
+profile: "{{ env_var('DBT_NAME') }}"
+
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+model-paths: ["models"]
+seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
+test-paths: ["tests"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
