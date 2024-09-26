@@ -9,5 +9,4 @@ main.py
 docker-data
 kestra.yaml
 package-lock.json
-.env
 __pycache__
