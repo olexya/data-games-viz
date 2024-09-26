@@ -11,11 +11,11 @@ In today's data-driven world, a myriad of open-source solutions are available fo
 
 ### The Challenge of Choice
 The open-source community has developed numerous solutions for various aspects of data handling, including:
-- [Ingestion and Transport](docs/architecture/ingestion_and_transport.md)
-- [Storage](docs/architecture/storage.md)
-- [Query and Processing](docs/architecture/storage.md)
-- [Analysis and Output](docs/architecture/analysis_and_output.md)
-- [Platform Management](docs/architecture/platform_management.md)
+- [Ingestion and Transport](docs/architecture/01.ingestion_and_transport.md)
+- [Storage](docs/architecture/02.storage.md)
+- [Query and Processing](docs/architecture/03.query_and_processing.md)
+- [Analysis and Output](docs/architecture/04.analysis_and_output.md)
+- [Platform Management](docs/architecture/05.platform_management.md)
 
 While this diversity is a testament to the innovation in the field, it can make the decision-making process complex and time-consuming for organizations looking to build or enhance their data infrastructure.
 
