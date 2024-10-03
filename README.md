@@ -59,7 +59,7 @@ Once installed, you can view the application by opening your browser at [localho
 
 ## Content
 For information on the types of content available in the application, see:
-[Content](docs/content.md)
+[Content](docs/usecase/content.md)
 
 ## Credit
 Special thanks to [Kestra](https://kestra.io), [dbt](https://www.getdbt.com), [Evidence](https://evidence.dev) and [PostgreSQL](postgresql.org/) for their contributions to this project.
