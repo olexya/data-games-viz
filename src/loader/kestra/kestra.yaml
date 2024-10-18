@@ -1,0 +1,61 @@
+id: get-data
+namespace: olexya.data.games
+inputs:
+  - type: INT
+    id: number_app
+    defaults: 190
+    description: Nombre d'app à télécharger
+    required: false
+    min: -1
+tasks:
+  - id: get-data
+    type: io.kestra.plugin.scripts.python.Commands
+    allowFailure: true
+    beforeCommands:
+      - pip install -r requirements.txt
+    commands:
+      - python main.py --app {{ inputs.number_app }}
+    disabled: false
+    namespaceFiles:
+      enabled: true
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+  - id: build
+    type: io.kestra.plugin.dbt.cli.DbtCLI
+    beforeCommands:
+      - |
+        while read line; do
+          export $line
+        done < .env
+    commands:
+      - 'mkdir /root/.dbt #'
+      - 'cp ./profiles.yml /root/.dbt/ #'
+      - 'dbt deps #'
+      - 'dbt build #'
+    containerImage: ghcr.io/kestra-io/dbt-postgres:latest
+    disabled: false
+    namespaceFiles:
+      enabled: true
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+  - id: evidence
+    type: io.kestra.plugin.scripts.python.Script
+    beforeCommands:
+      - pip install python-on-whales
+      - apk update && apk add --no-cache docker-cli
+    script: |
+      from python_on_whales import docker
+
+      if sum([container.name == "evidence" for container in docker.ps()]):
+        docker.container.execute("evidence",["npm", "run", "sources"])
+      else:
+        docker.container.start("evidence")
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+triggers:
+  - id: start
+    type: io.kestra.plugin.core.trigger.Schedule
+    cron: "@daily"
+    disabled: false
