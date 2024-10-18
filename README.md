@@ -17,7 +17,7 @@ The open-source community has developed numerous solutions for various aspects o
 - [Analysis and Output](docs/architecture/04.analysis_and_output.md)
 - [Platform Management](docs/architecture/05.platform_management.md)
 
-<img src="overview.png" alt="Overview" style="width:200px;"/>
+<img src="overview.png" alt="Overview" style="width:800px;"/>
 
 While this diversity is a testament to the innovation in the field, it can make the decision-making process complex and time-consuming for organizations looking to build or enhance their data infrastructure.
 
