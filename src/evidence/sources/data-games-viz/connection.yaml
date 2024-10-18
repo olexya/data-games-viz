@@ -6,3 +6,5 @@ options:
   port: 5432
   database: postgres
   schema: data_games_viz
+  user: postgres
+  password: password

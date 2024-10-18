@@ -28,10 +28,10 @@ tasks:
           export $line
         done < .env
     commands:
-      - mkdir /root/.dbt
-      - cp ./profiles.yml /root/.dbt/
-      - dbt deps
-      - dbt build
+      - 'mkdir /root/.dbt #'
+      - 'cp ./profiles.yml /root/.dbt/ #'
+      - 'dbt deps #'
+      - 'dbt build #'
     containerImage: ghcr.io/kestra-io/dbt-postgres:latest
     disabled: false
     namespaceFiles:
