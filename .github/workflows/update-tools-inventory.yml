@@ -8,12 +8,12 @@ on:
 jobs:
   update-inventory:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+        with:
+          token: ${{ secrets.PAT_TOKEN }}  # Utiliser le PAT au lieu du GITHUB_TOKEN
+          
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -26,5 +26,11 @@ jobs:
           
       - name: Update inventory files
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}  # Utiliser le PAT ici aussi
         run: python .github/scripts/update_tools_inventory.py
+
+      - name: Commit and push if changed
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git diff --quiet || (git add -A && git commit -m "Update tools inventory [automated]" && git push)
