@@ -9,7 +9,7 @@ jobs:
   update-inventory:
     runs-on: ubuntu-latest
     env:
-      PAT: ${{ secrets.PAT_TOKEN }}  # Définir le token comme variable d'environnement
+      PAT: ${{ secrets.PAT_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -18,9 +18,10 @@ jobs:
           token: ${{ secrets.PAT_TOKEN }}
           
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5  # Mise à jour vers v5
         with:
           python-version: '3.10'
+          node-version: '20'  # Spécifier Node.js 20
           
       - name: Install dependencies
         run: |
