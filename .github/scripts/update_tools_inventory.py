@@ -88,10 +88,10 @@ class MarkdownUpdater:
     def __init__(self, github_token: str):
         self.fetcher = GithubDataFetcher(github_token)
         self.files_to_update = {
-            '01.ingestion_and_transport.md': ['Data Replication', 'Change Data Capture'],
-            '02.storage.md': ['File Format', 'Data Modeling'],
-            '03.query_and_processing.md': ['Batch Processing', 'Stream Processing', 'Query Engine'],
-            '04.analysis_and_output.md': ['Framework', 'High-code', 'Low-code', 'No-code'],
+            '01.ingestion_and_transport.md': ['Data Replication', 'Event/Stream Processing','Log Collection and Processing', 'Change Data Capture'],
+            '02.storage.md': ['File Layer', 'Metadata Layer', 'Data Modeling'],
+            '03.query_and_processing.md': ['Batch Processing', 'Stream Processing', 'Query Engine', 'Dataframe Processing', 'Datawarehouse & OLAP'],
+            '04.analysis_and_output.md': ['Framework', 'High-code', 'Low-code', 'No-code', 'Web Analytics'],
             '05.platform_management.md': ['Data Quality', 'Governance', 'Workflow manager', 'Automation', 'Green IT']
         }
 
