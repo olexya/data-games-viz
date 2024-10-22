@@ -8,11 +8,14 @@ on:
 jobs:
   update-inventory:
     runs-on: ubuntu-latest
+    env:
+      PAT: ${{ secrets.PAT_TOKEN }}  # Définir le token comme variable d'environnement
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PAT_TOKEN }}  # Utiliser le PAT au lieu du GITHUB_TOKEN
+          fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN }}
           
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -26,11 +29,22 @@ jobs:
           
       - name: Update inventory files
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}  # Utiliser le PAT ici aussi
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: python .github/scripts/update_tools_inventory.py
 
-      - name: Commit and push if changed
+      - name: Configure Git
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git diff --quiet || (git add -A && git commit -m "Update tools inventory [automated]" && git push)
+
+      - name: Commit and push changes
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add -A
+            git commit -m "Update tools inventory [automated]"
+            git push origin main
+          else
+            echo "No changes to commit"
+          fi
