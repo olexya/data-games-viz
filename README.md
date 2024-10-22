@@ -11,13 +11,13 @@ In today's data-driven world, a myriad of open-source solutions are available fo
 
 ### The Challenge of Choice
 The open-source community has developed numerous solutions for various aspects of data handling, including:
-- [Ingestion and Transport](docs/architecture/01.ingestion_and_transport.md)
-- [Storage](docs/architecture/02.storage.md)
-- [Query and Processing](docs/architecture/03.query_and_processing.md)
-- [Analysis and Output](docs/architecture/04.analysis_and_output.md)
-- [Platform Management](docs/architecture/05.platform_management.md)
+- [Ingestion and Transport](01.ingestion_and_transport.md)
+- [Storage](02.storage.md)
+- [Query and Processing](d03.query_and_processing.md)
+- [Analysis and Output](04.analysis_and_output.md)
+- [Platform Management](05.platform_management.md)
 
-<img src="overview.png" alt="Overview" style="width:800px;"/>
+<img src="platform.png" alt="Overview" style="width:800px;"/>
 
 While this diversity is a testament to the innovation in the field, it can make the decision-making process complex and time-consuming for organizations looking to build or enhance their data infrastructure.
 
@@ -41,27 +41,28 @@ By applying these filters, companies can narrow down the vast array of options t
 
 Our goal is to simplify the process of navigating the rich landscape of open-source data solutions, enabling businesses to make informed decisions and leverage the power of open-source technologies effectively in their data strategies.
 
-## Prototype
+## A working prototype
 An application to understand statistique of [Steam](https://store.steampowered.com)
 
 The application using [Kestra](https://kestra.io), [dbt](https://www.getdbt.com), [Evidence](https://evidence.dev) and [PostgreSQL](postgresql.org/)
 
-### Installation
-Download : Using git
+### To launch the application
+
+#### Download
+Using git:
 ```sh
-42sh> git clone git@github.com:olexya/data-games-viz.git
-```
-Start : Using Docker
-```sh
-42sh> docker-compose up -d
+git clone git@github.com:olexya/data-games-viz.git
+cd data-games-viz
 ```
 
-### Viewing
-Once installed, you can view the application by opening your browser at [localhost:3000](localhost:3000). Enjoy exploring Steam statistics!
+#### Deployment
+Start the application using Docker:
+```sh
+docker-compose up -d
+```
+The initial setup may take 3-5 minutes depending on your internet connection.
 
-## Content
-For information on the types of content available in the application, see:
-[Content](docs/usecase/content.md)
+[More documentation](docs/usecase/content.md)
 
 ## Credit
 Special thanks to [Kestra](https://kestra.io), [dbt](https://www.getdbt.com), [Evidence](https://evidence.dev) and [PostgreSQL](postgresql.org/) for their contributions to this project.
