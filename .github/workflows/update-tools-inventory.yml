@@ -2,7 +2,8 @@
 name: Update Tools Inventory
 on:
   schedule:
-    - cron: '0 0 * * 1'  # Tous les lundis à minuit
+    - cron: '0 22 * * 0'  # Dimanche à 22h00
+    - cron: '0 22 * * 3'  # Mercredi à 22h00
   workflow_dispatch:      # Permet aussi le déclenchement manuel
 
 jobs:
