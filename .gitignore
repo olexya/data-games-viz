@@ -1,9 +1,23 @@
-docker-data // fix le dossier evidence (sources + pages)
+# Données générées par les volumes Docker (postgres, kestra, evidence) — jamais publiées
+docker-data/
+
+# Surcharges locales de docker compose (propres à chaque développeur)
+docker-compose.override.yml
+
+# Tests (locaux)
+tests/
+
+# Python
 .venv
+__pycache__/
+
+# Logs / téléchargements
 error.log
 save_download
+
+# OS / éditeurs
 .DS_Store
-.vscode
-docker-data
+.vscode/
+
+# npm
 package-lock.json
-__pycache__

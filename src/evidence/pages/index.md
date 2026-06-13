@@ -1,27 +1,60 @@
 ---
-title: "Gaming : Etude de marché"
+title: "Gaming : étude de marché"
+description: "Statistiques des jeux Steam — jeux, catégories et plateformes."
 ---
 
-```sql games_count
-    SELECT
-        count() as nb_games
+Analyse du catalogue **Steam** : volumétrie, prix, catégories et répartition par
+plateforme. Utilisez les filtres ci-dessous pour affiner l'analyse.
+
+<Dropdown name=plateforme title="Plateformes">
+    <DropdownOption value="(1, 3, 5, 7)" valueLabel="Windows"/>
+    <DropdownOption value="(2, 3, 6, 7)" valueLabel="Mac"/>
+    <DropdownOption value="(3, 4, 5, 7)" valueLabel="Linux"/>
+    <DropdownOption value="(1, 2, 3, 4, 5, 6, 7)" valueLabel="Toutes les plateformes"/>
+</Dropdown>
+<Dropdown title="Année" data={list_year} name=year value=year>
+    <DropdownOption value="%" valueLabel="Toutes les années"/>
+</Dropdown>
+
+```sql list_year
+    SELECT year(release_game) as year
     FROM data_games_viz.obt_games
-    GROUP BY ALL
+    WHERE release_game is not null
+    GROUP BY 1
+    ORDER BY 1 DESC
 ```
 
+```sql games_count
+    SELECT count() as nb_games FROM data_games_viz.obt_games
+```
+
+```sql categories_count
+    SELECT count(DISTINCT name_categorie) as nb_categories FROM data_games_viz.obt_categories
+```
+
+```sql plateforms_count
+    SELECT count(DISTINCT plateforms) as value FROM data_games_viz.obt_plateforms
+```
+
+## Vue d'ensemble
+
+<Grid cols=3>
+    <BigValue data={games_count} value=nb_games title="Jeux référencés" fmt="#,##0"/>
+    <BigValue data={categories_count} value=nb_categories title="Catégories"/>
+    <BigValue data={plateforms_count} value=value title="Plateformes"/>
+</Grid>
+
+<Tabs>
+    <Tab label="Jeux">
+
 ```sql games_count_select
-    SELECT
-        count() as nb_games
+    SELECT count() as nb_games
     FROM data_games_viz.obt_games
     WHERE plateforms in ${inputs.plateforme.value}
-    GROUP BY ALL
 ```
 
 ```sql games
-    SELECT
-        steam_id,
-        name_game,
-        notes
+    SELECT steam_id, name_game, notes
     FROM data_games_viz.obt_games
     WHERE plateforms in ${inputs.plateforme.value}
         AND year(release_game) LIKE '${inputs.year.value}'
@@ -31,25 +64,45 @@ title: "Gaming : Etude de marché"
 
 ```sql games_list
     SELECT
-        release_game AS year,
+        year(release_game) AS year,
         count(*) as nb_games,
         avg(price) as price
     FROM data_games_viz.obt_games
     WHERE plateforms in ${inputs.plateforme.value}
-    GROUP BY all
+        AND release_game is not null
+    GROUP BY 1
     ORDER BY year
 ```
 
-```sql categories_count
-    SELECT
-        count() as nb_categories
-    FROM data_games_viz.obt_categories
-    GROUP BY plateforms
-```
+<BigValue data={games_count_select} value=nb_games title="Jeux pour la sélection" fmt="#,##0"/>
+
+<BarChart
+    data={games}
+    x=name_game
+    y=notes
+    swapXY=true
+    title="Top 3 des jeux les mieux notés"
+    colorPalette={["#00B34E"]}
+/>
+
+<BarChart
+    data={games_list}
+    title="Sorties par an et prix moyen"
+    x=year
+    y=nb_games
+    yAxisTitle="Nombre de jeux"
+    y2=price
+    y2SeriesType=line
+    y2AxisTitle="Prix moyen (€)"
+    y2Fmt="eur"
+    colorPalette={["#00B34E", "#007661"]}
+/>
+
+    </Tab>
+    <Tab label="Catégories">
 
 ```sql categories_count_select
-    SELECT
-        count() as nb_categories
+    SELECT count() as nb_categories
     FROM data_games_viz.obt_categories
     WHERE
         case plateforms
@@ -58,13 +111,10 @@ title: "Gaming : Etude de marché"
             WHEN 'Linux' THEN 4
         END
         IN ${inputs.plateforme.value}
-    GROUP BY plateforms
 ```
 
 ```sql categories
-    SELECT
-        name_categorie,
-        sum(value) as value
+    SELECT name_categorie, sum(value) as value
     FROM data_games_viz.obt_categories
     WHERE
         case plateforms
@@ -80,7 +130,7 @@ title: "Gaming : Etude de marché"
 
 ```sql categories_list
     SELECT
-        release_date AS year,
+        year(release_date) AS year,
         count() as nb_categories
     FROM data_games_viz.obt_categories
     WHERE
@@ -90,156 +140,66 @@ title: "Gaming : Etude de marché"
             WHEN 'Linux' THEN 4
         END
         IN ${inputs.plateforme.value}
-    GROUP BY plateforms, year
+        AND release_date is not null
+    GROUP BY 1
     ORDER BY year
 ```
 
-```sql search_games
-    SELECT
-        name_game,
-        '/' || steam_id::int as link,
-    FROM data_games_viz.obt_games
-    WHERE plateforms in ${inputs.plateforme.value}
-        AND year(release_game) LIKE '${inputs.year.value}'
-```
+<BigValue data={categories_count_select} value=nb_categories title="Catégories pour la sélection" fmt="#,##0"/>
 
-```sql list_year
-    SELECT
-        year(release_game) as year
-    FROM data_games_viz.obt_games
-    GROUP BY release_game
-```
+<BarChart
+    data={categories}
+    x=name_categorie
+    y=value
+    swapXY=true
+    title="Top 3 des catégories les plus représentées"
+    colorPalette={["#00C2FF"]}
+/>
+
+<BarChart
+    data={categories_list}
+    title="Catégories par année"
+    x=year
+    y=nb_categories
+    colorPalette={["#00C2FF", "#00E7DA"]}
+/>
+
+    </Tab>
+    <Tab label="Plateformes">
 
 ```sql plateformes
-    SELECT
-        categorie_name,
-        plateforms,
-        count() as value
+    SELECT categorie_name, plateforms, count() as value
     FROM data_games_viz.obt_plateforms
     WHERE categorie_name LIKE '%-player%'
         AND year(release_date) LIKE '${inputs.year.value}'
     GROUP BY categorie_name, plateforms
 ```
 
-```sql plateforms_count
-    SELECT
-        3 as value
-    FROM
-        data_games_viz.obt_plateforms
-    LIMIT 1
-```
-<Dropdown name=plateforme title="Plateformes">
-    <DropdownOption value="(1, 3, 5, 7)" valueLabel="Windows"/>
-    <DropdownOption value="(2, 3, 6, 7)" valueLabel="Mac"/>
-    <DropdownOption value="(3, 4, 5, 7)" valueLabel="Linux"/>
-    <DropdownOption value="(1, 2, 3, 4, 5, 6, 7)" valueLabel="Toutes les plateformes"/>
-</Dropdown>
-<Dropdown title="Année" data={list_year} name=year value=year>
-    <DropdownOption value="%" valueLabel="Toutes les années"/>
-</Dropdown>
+Répartition des jeux solo / multijoueur par plateforme.
 
-<Grid cols=3>
-<BigValue 
-    data={games_count} 
-    value=nb_games
-    title="Nombre de jeux enregistré"
-    fmt="%d"
+<SankeyDiagram
+    data={plateformes}
+    sourceCol=categorie_name
+    targetCol=plateforms
+    valueCol=value
+    colorPalette={["#0053E9", "#CF38C7", "#FF4493", "#FF8165", "#FFC051", "#F9F871"]}
 />
-<BigValue 
-    data={categories_count}
-    title="Nombre de catégories déclaré"
-    value=nb_categories
-/>
-<BigValue 
-    data={plateforms_count}
-    title="Nombre de plateforms disponibles"
-    value=value
-/>
-</Grid>
 
-<Tabs>
-    <Tab label="Games">
-        <BigValue
-            data={games_count_select}
-            value=nb_games
-            title="Nombre de jeu enregistré"
-            fmt="%d"
-        />
-
-        <BarChart
-            data={games}
-            x=name_game
-            y=notes
-            swapXY=true
-            title="Les 3 jeux les plus notés"
-            colorPalette={
-                "#00B34E"
-            }
-        />
-
-        <BarChart
-            data={games_list}
-            title="Nombre de sortie par an, "
-            x=year
-            y=nb_games
-            y2=price
-            y2SeriesType=line
-            colorPalette={[
-                "#00B34E",
-                "#007661"
-            ]}
-        />
-    </Tab>
-    <Tab label="Categories">
-        <BigValue
-            data={categories_count_select}
-            value=nb_categories
-            title="Nombre de catégories"
-            fmt="%d"
-        />
-
-        <BarChart
-            data={categories}
-            x=name_categorie
-            y=value
-            swapXY=true
-            title="Les 3 catégories avec le plus de jeux"
-            colorPalette={
-                "#00C2FF"
-            }
-        />
-
-        <BarChart
-            data={categories_list}
-            title="Nombre de catégories créé chaque année"
-            x=year
-            y=nb_categories
-            colorPalette={[
-                "#00C2FF",
-                "#00E7DA"
-            ]}
-        />
-    </Tab>
-    <Tab label="Plateformes">
-        <BigValue 
-            data={plateforms_count}
-            title="Nombre de plateforms disponibles"
-            value=value
-        />
-        <SankeyDiagram
-            data={plateformes}
-            sourceCol=categorie_name
-            targetCol=plateforms
-            valueCol=value
-            colorPalette={[
-                "#0053E9",
-                "#CF38C7",
-                "#FF4493",
-                "#FF8165",
-                "#FFC051",
-                "#F9F871"
-            ]}
-        />
     </Tab>
 </Tabs>
-<DataTable data={search_games} search=true link=link/>
+
+## Explorer les jeux
+
+```sql search_games
+    SELECT
+        name_game AS "Jeu",
+        '/' || steam_id::int as link
+    FROM data_games_viz.obt_games
+    WHERE plateforms in ${inputs.plateforme.value}
+        AND year(release_game) LIKE '${inputs.year.value}'
+    ORDER BY name_game
+```
+
+Cliquez sur un jeu pour ouvrir sa fiche détaillée.
+
+<DataTable data={search_games} search=true link=link rows=8/>

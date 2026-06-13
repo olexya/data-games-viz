@@ -1,3 +1,2 @@
 requests
-python_on_whales
 python-dotenv

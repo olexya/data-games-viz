@@ -1,24 +1,41 @@
 name: data-games-viz
+
+# Réseau nommé explicitement : les conteneurs de tâches lancés par Kestra
+# (get-data, dbt) le rejoignent via `networkMode: data-games-viz` et résolvent
+# ainsi `postgres` / `kestra` par nom de service, sur toutes les plateformes
+# (Mac / Windows / Linux), sans dépendre de `host.docker.internal`.
+networks:
+  default:
+    name: data-games-viz
+
 services:
   postgres:
     container_name: postgres
+    image: postgres:18
+    # Port publié uniquement pour accès externe/debug. Les comms internes passent
+    # par le réseau compose. Surchargeable pour éviter un conflit de port hôte.
     ports:
-      - "5432:5432"
-    image: postgres:latest
+      - "${POSTGRES_HOST_PORT:-5432}:5432"
     env_file:
       - ./.env
     volumes:
-      - ./docker-data/pgdata:/var/lib/postgresql/data
+      # PostgreSQL 18+ stocke les données dans un sous-dossier versionné : on monte
+      # le PARENT /var/lib/postgresql (compatible PG17 et PG18), pas /.../data.
+      - ./docker-data/pgdata:/var/lib/postgresql
       - ./src/loader/postgres:/docker-entrypoint-initdb.d/
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $${KESTRA_POSTGRES_DB} -U $${KESTRA_POSTGRES_USER}"]
       interval: 5s
       timeout: 2s
       retries: 30
+    restart: unless-stopped
 
   kestra:
-    image: kestra/kestra:latest
+    image: kestra/kestra:v1.3.22
     container_name: kestra
+    # init: réape les processus zombies (Kestra lance des sous-process) et
+    # transmet correctement les signaux → arrêt/redémarrage fiables.
+    init: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./docker-data/kestra/tmp:/tmp/
@@ -32,14 +49,20 @@ services:
         condition: service_healthy
     user: root
     ports:
-      - 8080:8080
+      - "8080:8080"
     command: server standalone --config /home/kestra/application.yaml
+    restart: unless-stopped
 
   loader:
-    image: python
+    image: python:3.13-slim
     container_name: loader
     depends_on:
       - kestra
+    environment:
+      # Rechargement des données seulement si > RELOAD_MAX_AGE_HOURS (défaut 24h),
+      # ou si FORCE_RELOAD=true. Évite de re-télécharger Steam à chaque `up`.
+      - FORCE_RELOAD=${FORCE_RELOAD:-}
+      - RELOAD_MAX_AGE_HOURS=${RELOAD_MAX_AGE_HOURS:-24}
     volumes:
       - ./src/get-data:/home/src/get-data
       - ./src/dbt:/home/src/dbt
@@ -54,8 +77,7 @@ services:
       - /bin/sh
       - -c
       - |
-        pip install -r /home/src/loader/requirements.txt
-        python-on-whales download-cli
+        pip install --no-cache-dir -r /home/src/loader/requirements.txt
         python /home/src/loader/main.py
 
   evidence:
@@ -70,3 +92,9 @@ services:
       - ./src/evidence:/evidence-workspace
     env_file:
       - ./.env
+    # Build de PRODUCTION (statique, prérendu) puis service via `preview` :
+    # une fois les données rafraîchies, l'affichage du rapport est quasi-instantané
+    # (contrairement au mode dev/vite qui recompile à chaque navigation).
+    command:
+      - npm install && npm run sources && npm run build && npx serve build -l tcp://0.0.0.0:3000
+    restart: unless-stopped

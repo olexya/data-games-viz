@@ -20,6 +20,7 @@ tasks:
       enabled: true
     taskRunner:
       type: io.kestra.plugin.scripts.runner.docker.Docker
+      networkMode: data-games-viz
   - id: build
     type: io.kestra.plugin.dbt.cli.DbtCLI
     beforeCommands:
@@ -38,22 +39,7 @@ tasks:
       enabled: true
     taskRunner:
       type: io.kestra.plugin.scripts.runner.docker.Docker
-  - id: evidence
-    type: io.kestra.plugin.scripts.python.Script
-    beforeCommands:
-      - pip install python-on-whales
-      - apk update && apk add --no-cache docker-cli
-    script: |
-      from python_on_whales import docker
-
-      if sum([container.name == "evidence" for container in docker.ps()]):
-        docker.container.execute("evidence",["npm", "run", "sources"])
-      else:
-        docker.container.start("evidence")
-    taskRunner:
-      type: io.kestra.plugin.scripts.runner.docker.Docker
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
+      networkMode: data-games-viz
 triggers:
   - id: start
     type: io.kestra.plugin.core.trigger.Schedule

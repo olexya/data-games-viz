@@ -1,44 +1,14 @@
 {% macro format_date(date, month_mapping) %}
 
+-- Les dates de sortie Steam arrivent dans des dizaines de formats/locales
+-- ("21 Aug 2012", "Oct 2014", "Q1 2015", "2014年5月", "Oca 2016"…). Tenter de
+-- parser le mois de façon exhaustive est fragile (cf. erreur « invalid value "Oc"
+-- for "MM" »). Le rapport n'agrège que par ANNÉE : on extrait donc l'année de
+-- façon robuste (jamais d'erreur) et on la ramène au 1er janvier. Les valeurs
+-- sans année identifiable deviennent NULL.
 CASE
-    WHEN release_date_date ~ '^\d{1,2} [a-zA-Zéа-я]{3,} \d{4}'
-    THEN TO_DATE(
-        COALESCE((SELECT mapping->>(SUBSTRING(release_date_date FROM '\s(\w+)\s')) FROM month_mapping), SUBSTRING(release_date_date FROM '\s(\w+)\s')) || 
-        SUBSTRING(release_date_date FROM '(\d{1,2})') || 
-        SUBSTRING(release_date_date FROM '(\d{4})$'),
-        'MMDDYYYY'
-    )
-
-    WHEN release_date_date ~ '^[a-zA-Z]{3} \d{1,2}, \d{4}'
-    THEN TO_DATE(
-        COALESCE((SELECT mapping->>(SUBSTRING(release_date_date FROM '^(\w+)')) FROM month_mapping), SUBSTRING(release_date_date FROM '^(\w+)')) || 
-        SUBSTRING(release_date_date FROM '\s(\d{1,2}),') || 
-        SUBSTRING(release_date_date FROM '(\d{4})$'),
-        'MMDDYYYY'
-    )
-
-    WHEN release_date_date ~ '^Q[1-4] \d{4}'
-    THEN (SUBSTRING(release_date_date FROM '(\d{4})$')::INT || '-' || 
-            (SUBSTRING(release_date_date FROM 'Q(\d)')::INT * 3)::TEXT || '-01')::DATE
-
-    WHEN release_date_date ~ '^[a-zA-Z]+ \d{4}'
-    THEN TO_DATE(
-        COALESCE((SELECT mapping->>(SUBSTRING(release_date_date FROM '^(\w+)')) FROM month_mapping), SUBSTRING(release_date_date FROM '^(\w+)')) || '01' || 
-        SUBSTRING(release_date_date FROM '(\d{4})$'),
-        'MMDDYYYY'
-    )
-
-    WHEN release_date_date ~ '^\d{4}$'
-    THEN (release_date_date || '-01-01')::DATE
-
-    WHEN release_date_date ~ '^\d{4}年\d{1,2}月\d{1,2}日$'
-    THEN TO_DATE(
-        SUBSTRING(release_date_date FROM '(\d{4})年') || '-' ||
-        SUBSTRING(release_date_date FROM '年(\d{1,2})月') || '-' ||
-        SUBSTRING(release_date_date FROM '月(\d{1,2})日'),
-        'YYYY-MM-DD'
-    )
-
-    ELSE '2025-01-01'::DATE
+    WHEN release_date_date ~ '\d{4}'
+    THEN (SUBSTRING(release_date_date FROM '(\d{4})') || '-01-01')::DATE
+    ELSE NULL
 END AS release_date
 {% endmacro %}

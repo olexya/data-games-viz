@@ -27,19 +27,20 @@ cd data-games-viz
 ### Deployment
 Start the application using Docker:
 ```sh
-docker-compose up -d
+docker compose up -d
 ```
 The initial setup may take 3-5 minutes depending on your internet connection.
 
 ### Verification
 1. Check if all containers are running:
 ```sh
-docker-compose ps
+docker compose ps
 ```
 2. Access the application at [localhost:3000](http://localhost:3000)
+   (Kestra UI/API at [localhost:8080](http://localhost:8080), default login `admin@kestra.io` / `Kestra1234!`, configurable in `.env`)
 3. Verify the logs for any errors:
 ```sh
-docker-compose logs
+docker compose logs
 ```
 ## Technical Architecture
 
@@ -96,8 +97,8 @@ On clicking an element in the table, a new tab opens on the left of the search b
 ### Common Issues
 1. **Container Startup Failures**
    ```sh
-   docker-compose down
-   docker-compose up -d --force-recreate
+   docker compose down
+   docker compose up -d --force-recreate
    ```
 
 2. **Data Loading Issues**

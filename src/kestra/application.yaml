@@ -5,6 +5,11 @@ datasources:
     username: ${KESTRA_POSTGRES_USER}
     password: ${KESTRA_POSTGRES_PASSWORD}
 kestra:
+  server:
+    basic-auth:
+      enabled: true
+      username: ${KESTRA_BASIC_AUTH_USERNAME}
+      password: ${KESTRA_BASIC_AUTH_PASSWORD}
   plugins:
     configurations:
       - type: io.kestra.plugin.scripts.runner.docker.Docker
