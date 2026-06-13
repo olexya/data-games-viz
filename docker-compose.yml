@@ -54,7 +54,7 @@ services:
     restart: unless-stopped
 
   loader:
-    image: python:3.13-slim
+    image: python:3.14-slim
     container_name: loader
     depends_on:
       - kestra
